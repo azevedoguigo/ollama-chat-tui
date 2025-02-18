@@ -30,7 +30,7 @@ func (cv *ChatView) Update(chat *storage.ChatSession) {
 			speaker = "You"
 			color = "[green]"
 		} else {
-			speaker = "DeepSeek"
+			speaker = "Assistant"
 			color = "[blue]"
 		}
 		fmt.Fprintf(cv.textView, "%s%s:[-] %s\n", color, speaker, msg.Content)

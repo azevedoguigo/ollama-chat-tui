@@ -21,11 +21,24 @@ func Run() error {
 		return err
 	}
 
+	currentModel := "deepseek-r1"
+	availableModels := []string{"deepseek-r1", "gemma2", "mistral"}
+
 	chatList := ui.NewChatList(chatManager)
 	chatView := ui.NewChatView()
 	inputField := ui.NewInputField()
 
-	mainLayout := ui.BuildMainLayout(chatList.GetPrimitive(), chatView.GetPrimitive(), inputField.GetPrimitive())
+	chatFlex := tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(chatView.GetPrimitive(), 0, 1, false).
+		AddItem(inputField.GetPrimitive(), 3, 1, true)
+
+	mainChatLayout := tview.NewFlex().
+		AddItem(chatList.GetPrimitive(), 20, 1, false).
+		AddItem(chatFlex, 0, 1, true)
+
+	pages := tview.NewPages().
+		AddPage("chat", mainChatLayout, true, true)
+
 	app := tview.NewApplication()
 
 	var currentChat *storage.ChatSession
@@ -68,7 +81,7 @@ func Run() error {
 			copy(history, currentChat.Messages)
 
 			go func() {
-				err := ollama.QueryOllamaStream(history[:len(history)-1], func(chunk string) {
+				err := ollama.QueryOllamaStream(currentModel, history[:len(history)-1], func(chunk string) {
 					if err := chatManager.UpdateLastMessage(chatID, chunk); err != nil {
 						log.Printf("Error updating message: %v", err)
 					}
@@ -126,14 +139,45 @@ func Run() error {
 								chatList.Refresh()
 							}
 						}
-						app.SetRoot(mainLayout, true)
+						app.SetRoot(pages, true)
 					})
 				app.SetRoot(modal, false)
 			}
 			return nil
 		}
+		if event.Rune() == 's' {
+			openSettings(app, pages, currentModel, availableModels, func(newModel string) {
+				currentModel = newModel
+				pages.SwitchToPage("chat")
+				app.SetFocus(inputField.GetPrimitive())
+			})
+			return nil
+		}
 		return event
 	})
 
-	return app.SetRoot(mainLayout, true).EnableMouse(true).Run()
+	mainChatLayout.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		if event.Rune() == rune(tcell.KeyCtrlS) {
+			openSettings(app, pages, currentModel, availableModels, func(newModel string) {
+				currentModel = newModel
+				pages.SwitchToPage("chat")
+				app.SetFocus(inputField.GetPrimitive())
+			})
+			return nil
+		}
+		return event
+	})
+
+	return app.SetRoot(pages, true).EnableMouse(true).Run()
+}
+
+func openSettings(
+	app *tview.Application,
+	pages *tview.Pages,
+	currentModel string,
+	availableModels []string,
+	onSave func(newModel string),
+) {
+	settingsPage := ui.NewSettingsPage(currentModel, availableModels, onSave)
+	pages.AddAndSwitchToPage("settings", settingsPage.GetPrimitive(), true)
 }

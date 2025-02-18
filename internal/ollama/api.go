@@ -16,9 +16,9 @@ type OllamaRequest struct {
 	Messages []storage.Message `json:"messages"`
 }
 
-func QueryOllamaStream(messages []storage.Message, callbalc func(string)) error {
+func QueryOllamaStream(model string, messages []storage.Message, callbalc func(string)) error {
 	requestData := OllamaRequest{
-		Model:    "deepseek-r1",
+		Model:    model,
 		Messages: messages,
 		Stream:   true,
 	}
