@@ -13,7 +13,7 @@ import (
 )
 
 func Run() error {
-	configDir := ".deepseek-tui"
+	configDir := ".ollama-chat-tui"
 	chatsDir := "chats"
 
 	chatManager, err := handler.NewChatManager(configDir, chatsDir)
