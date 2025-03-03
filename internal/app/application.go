@@ -145,19 +145,12 @@ func Run() error {
 			}
 			return nil
 		}
-		if event.Rune() == 's' {
-			openSettings(app, pages, currentModel, availableModels, func(newModel string) {
-				currentModel = newModel
-				pages.SwitchToPage("chat")
-				app.SetFocus(inputField.GetPrimitive())
-			})
-			return nil
-		}
+
 		return event
 	})
 
 	mainChatLayout.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		if event.Rune() == rune(tcell.KeyCtrlS) {
+		if event.Rune() == rune(tcell.KeyCtrlD) {
 			openSettings(app, pages, currentModel, availableModels, func(newModel string) {
 				currentModel = newModel
 				pages.SwitchToPage("chat")
