@@ -10,5 +10,6 @@ func BuildMainLayout(chatList tview.Primitive, chatView tview.Primitive, inputFi
 	mainFlex := tview.NewFlex().
 		AddItem(chatList, 20, 1, false).
 		AddItem(chatFlex, 0, 1, true)
+
 	return mainFlex
 }

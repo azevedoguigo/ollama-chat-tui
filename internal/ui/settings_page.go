@@ -47,6 +47,7 @@ func NewSettingsPage(currentModel string, models []string, onSave func(newModel 
 		}
 	})
 	sp.form.SetBorder(true).SetTitle("Settings")
+
 	return sp
 }
 

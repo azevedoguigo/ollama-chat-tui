@@ -11,6 +11,7 @@ type InputField struct {
 
 func NewInputField() *InputField {
 	in := tview.NewInputField().SetLabel("You: ").SetFieldWidth(0)
+
 	return &InputField{
 		input: in,
 	}

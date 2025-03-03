@@ -19,6 +19,7 @@ func NewChatView() *ChatView {
 			SetWordWrap(true),
 	}
 	cv.textView.SetBorder(true).SetTitle("Chat")
+
 	return cv
 }
 
@@ -33,8 +34,10 @@ func (cv *ChatView) Update(chat *storage.ChatSession) {
 			speaker = "Assistant"
 			color = "[blue]"
 		}
+
 		fmt.Fprintf(cv.textView, "%s%s:[-] %s\n", color, speaker, msg.Content)
 	}
+
 	cv.textView.ScrollToEnd()
 }
 
