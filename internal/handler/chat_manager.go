@@ -50,6 +50,7 @@ func (cm *ChatManager) AddChat(title string) *storage.ChatSession {
 func (cm *ChatManager) GetChatByID(id string) (*storage.ChatSession, bool) {
 	cm.mutex.RLock()
 	defer cm.mutex.RUnlock()
+
 	chat, exists := cm.chats[id]
 	return chat, exists
 }
@@ -57,6 +58,7 @@ func (cm *ChatManager) GetChatByID(id string) (*storage.ChatSession, bool) {
 func (cm *ChatManager) GetAllChats() []*storage.ChatSession {
 	cm.mutex.RLock()
 	defer cm.mutex.RUnlock()
+
 	var chatsList []*storage.ChatSession
 	for _, chat := range cm.chats {
 		chatsList = append(chatsList, chat)
@@ -64,26 +66,31 @@ func (cm *ChatManager) GetAllChats() []*storage.ChatSession {
 	sort.Slice(chatsList, func(i, j int) bool {
 		return chatsList[i].CreatedAt.Before(chatsList[j].CreatedAt)
 	})
+
 	return chatsList
 }
 
 func (cm *ChatManager) AppendMessage(chatID, role, content string) error {
 	cm.mutex.Lock()
 	defer cm.mutex.Unlock()
+
 	chat, exists := cm.chats[chatID]
 	if !exists {
 		return fmt.Errorf("chat with ID %s not found", chatID)
 	}
+
 	chat.Messages = append(chat.Messages, storage.Message{
 		Role:    role,
 		Content: content,
 	})
+
 	return storage.SaveChat(cm.configDir, cm.chatsDir, chat)
 }
 
 func (cm *ChatManager) UpdateLastMessage(chatID, content string) error {
 	cm.mutex.Lock()
 	defer cm.mutex.Unlock()
+
 	chat, exists := cm.chats[chatID]
 	if !exists {
 		return fmt.Errorf("chat with ID %s not found", chatID)
@@ -92,12 +99,14 @@ func (cm *ChatManager) UpdateLastMessage(chatID, content string) error {
 		return fmt.Errorf("the chat has no messages to update")
 	}
 	chat.Messages[len(chat.Messages)-1].Content += content
+
 	return storage.SaveChat(cm.configDir, cm.chatsDir, chat)
 }
 
 func (cm *ChatManager) DeleteChat(chatID string) error {
 	cm.mutex.Lock()
 	defer cm.mutex.Unlock()
+
 	chat, exists := cm.chats[chatID]
 	if !exists {
 		return fmt.Errorf("chat with ID %s not found", chatID)
@@ -105,6 +114,7 @@ func (cm *ChatManager) DeleteChat(chatID string) error {
 	if err := storage.DeleteChat(chat, cm.chats); err != nil {
 		return err
 	}
+
 	delete(cm.chats, chatID)
 	return nil
 }

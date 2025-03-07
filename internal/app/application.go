@@ -53,6 +53,7 @@ func Run() error {
 		if key == tcell.KeyEnter {
 			userInput := inputField.GetText()
 			inputField.SetText("")
+
 			if userInput == "" {
 				return
 			}
@@ -60,6 +61,7 @@ func Run() error {
 			if currentChat == nil {
 				title := fmt.Sprintf("Chat %d", len(chatManager.GetAllChats())+1)
 				currentChat = chatManager.AddChat(title)
+
 				chatList.Refresh()
 			}
 
@@ -88,6 +90,7 @@ func Run() error {
 
 					updatedChat, _ := chatManager.GetChatByID(chatID)
 					currentChat = updatedChat
+
 					app.QueueUpdateDraw(func() {
 						updateChatView()
 					})
@@ -97,6 +100,7 @@ func Run() error {
 					if updateErr := chatManager.UpdateLastMessage(chatID, errMsg); updateErr != nil {
 						log.Printf("Error updating message with error: %v", updateErr)
 					}
+
 					app.QueueUpdateDraw(func() {
 						updateChatView()
 					})
@@ -112,6 +116,7 @@ func Run() error {
 			inputField.SetText("")
 		} else {
 			chat, exists := chatManager.GetChatByID(secondaryText)
+
 			if exists {
 				currentChat = chat
 				updateChatView()
@@ -122,8 +127,10 @@ func Run() error {
 	chatList.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Key() == tcell.KeyDelete || event.Rune() == 'd' {
 			currentItem := chatList.GetCurrentItemIndex()
+
 			if currentItem > 0 {
 				chatID := chatList.GetSecondaryText(currentItem)
+
 				modal := tview.NewModal().
 					SetText("Delete this chat permanently?").
 					AddButtons([]string{"Cancel", "Delete"}).
@@ -134,37 +141,39 @@ func Run() error {
 							} else {
 								if currentChat != nil && currentChat.ID.String() == chatID {
 									currentChat = nil
+
 									chatView.Clear()
 								}
+
 								chatList.Refresh()
 							}
 						}
+
 						app.SetRoot(pages, true)
 					})
+
 				app.SetRoot(modal, false)
 			}
+
 			return nil
 		}
-		if event.Rune() == 's' {
-			openSettings(app, pages, currentModel, availableModels, func(newModel string) {
-				currentModel = newModel
-				pages.SwitchToPage("chat")
-				app.SetFocus(inputField.GetPrimitive())
-			})
-			return nil
-		}
+
 		return event
 	})
 
 	mainChatLayout.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		if event.Rune() == rune(tcell.KeyCtrlS) {
+		if event.Rune() == rune(tcell.KeyCtrlD) {
 			openSettings(app, pages, currentModel, availableModels, func(newModel string) {
 				currentModel = newModel
+
 				pages.SwitchToPage("chat")
+
 				app.SetFocus(inputField.GetPrimitive())
 			})
+
 			return nil
 		}
+
 		return event
 	})
 

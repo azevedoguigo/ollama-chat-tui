@@ -7,6 +7,8 @@ import (
 	"github.com/rivo/tview"
 )
 
+const INITIAL_MESSAGE = "Welcome to Ollama Chat TUI!\nPress CTRL + D to open settings and change AI model or CTRL + C to exit."
+
 type ChatView struct {
 	textView *tview.TextView
 }
@@ -19,6 +21,8 @@ func NewChatView() *ChatView {
 			SetWordWrap(true),
 	}
 	cv.textView.SetBorder(true).SetTitle("Chat")
+	cv.textView.SetText(INITIAL_MESSAGE)
+
 	return cv
 }
 
@@ -33,13 +37,16 @@ func (cv *ChatView) Update(chat *storage.ChatSession) {
 			speaker = "Assistant"
 			color = "[blue]"
 		}
+
 		fmt.Fprintf(cv.textView, "%s%s:[-] %s\n", color, speaker, msg.Content)
 	}
+
 	cv.textView.ScrollToEnd()
 }
 
 func (cv *ChatView) Clear() {
 	cv.textView.Clear()
+	cv.textView.SetText(INITIAL_MESSAGE)
 }
 
 func (cv *ChatView) GetPrimitive() tview.Primitive {
