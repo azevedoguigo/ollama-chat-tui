@@ -22,7 +22,10 @@ func Run() error {
 	}
 
 	currentModel := "deepseek-r1"
-	availableModels, err := service.FindLocalModels()
+	availableModels, err := service.FindOllamaLocalModels()
+	if err != nil {
+		return err
+	}
 
 	chatList := ui.NewChatList(chatManager)
 	chatView := ui.NewChatView()

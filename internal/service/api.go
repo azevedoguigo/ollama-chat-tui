@@ -40,7 +40,7 @@ type OllamaRequest struct {
 	Messages []storage.Message `json:"messages"`
 }
 
-func FindLocalModels() (*FindModelsResponse, error) {
+func FindOllamaLocalModels() (*FindModelsResponse, error) {
 	response, err := http.Get("http://localhost:11434/api/tags")
 	if err != nil {
 		return nil, err
@@ -52,14 +52,14 @@ func FindLocalModels() (*FindModelsResponse, error) {
 		return nil, err
 	}
 
-	var findLocalModelsResponse FindModelsResponse
+	var findModelsResponse FindModelsResponse
 
-	err = json.Unmarshal(data, &findLocalModelsResponse)
+	err = json.Unmarshal(data, &findModelsResponse)
 	if err != nil {
 		return nil, err
 	}
 
-	return &findLocalModelsResponse, nil
+	return &findModelsResponse, nil
 }
 
 func QueryOllamaStream(model string, messages []storage.Message, callbalc func(string)) error {
