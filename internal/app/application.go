@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/azevedoguigo/ollama-chat-tui/internal/handler"
-	"github.com/azevedoguigo/ollama-chat-tui/internal/ollama"
+	"github.com/azevedoguigo/ollama-chat-tui/internal/service"
 	"github.com/azevedoguigo/ollama-chat-tui/internal/storage"
 	"github.com/azevedoguigo/ollama-chat-tui/internal/ui"
 	"github.com/gdamore/tcell/v2"
@@ -22,7 +22,7 @@ func Run() error {
 	}
 
 	currentModel := "deepseek-r1"
-	availableModels := []string{"deepseek-r1", "gemma2", "mistral"}
+	availableModels, err := service.FindLocalModels()
 
 	chatList := ui.NewChatList(chatManager)
 	chatView := ui.NewChatView()
@@ -83,7 +83,7 @@ func Run() error {
 			copy(history, currentChat.Messages)
 
 			go func() {
-				err := ollama.QueryOllamaStream(currentModel, history[:len(history)-1], func(chunk string) {
+				err := service.QueryOllamaStream(currentModel, history[:len(history)-1], func(chunk string) {
 					if err := chatManager.UpdateLastMessage(chatID, chunk); err != nil {
 						log.Printf("Error updating message: %v", err)
 					}
@@ -184,7 +184,7 @@ func openSettings(
 	app *tview.Application,
 	pages *tview.Pages,
 	currentModel string,
-	availableModels []string,
+	availableModels *service.FindModelsResponse,
 	onSave func(newModel string),
 ) {
 	settingsPage := ui.NewSettingsPage(currentModel, availableModels, onSave)
