@@ -2,6 +2,7 @@
 package ui
 
 import (
+	"github.com/azevedoguigo/ollama-chat-tui/internal/service"
 	"github.com/rivo/tview"
 )
 
@@ -12,19 +13,32 @@ type SettingsPage struct {
 	onSave       func(newModel string)
 }
 
-func NewSettingsPage(currentModel string, models []string, onSave func(newModel string)) *SettingsPage {
+func NewSettingsPage(
+	currentModel string,
+	models *service.FindModelsResponse,
+	onSave func(newModel string),
+) *SettingsPage {
+	var modelsNames []string
+	if len(models.Models) > 0 {
+		for i := range models.Models {
+			modelsNames = append(modelsNames, models.Models[i].Name)
+		}
+	} else {
+		modelsNames = append(modelsNames, "No models avaliable")
+	}
+
 	sp := &SettingsPage{
 		form:         tview.NewForm(),
 		currentModel: currentModel,
-		models:       models,
+		models:       modelsNames,
 		onSave:       onSave,
 	}
 
 	dropdown := tview.NewDropDown().
 		SetLabel("Model: ").
-		SetOptions(models, nil)
+		SetOptions(modelsNames, nil)
 
-	for index, m := range models {
+	for index, m := range modelsNames {
 		if m == currentModel {
 			dropdown.SetCurrentOption(index)
 			break
