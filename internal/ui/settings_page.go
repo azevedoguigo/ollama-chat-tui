@@ -19,6 +19,7 @@ func NewSettingsPage(
 	onSave func(newModel string),
 ) *SettingsPage {
 	var modelsNames []string
+
 	if len(models.Models) > 0 {
 		for i := range models.Models {
 			modelsNames = append(modelsNames, models.Models[i].Name)
