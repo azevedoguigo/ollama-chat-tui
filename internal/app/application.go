@@ -12,6 +12,25 @@ import (
 	"github.com/rivo/tview"
 )
 
+func openSettings(
+	app *tview.Application,
+	pages *tview.Pages,
+	currentModel string,
+	availableModels *service.FindModelsResponse,
+	onSave func(newModel string),
+) {
+	settingsPage := ui.NewSettingsPage(currentModel, availableModels, onSave)
+	pages.AddAndSwitchToPage("settings", settingsPage.GetPrimitive(), true)
+}
+
+func setDefaultModel(availableModels *service.FindModelsResponse) string {
+	if len(availableModels.Models) > 0 {
+		return availableModels.Models[0].Name
+	}
+
+	return ""
+}
+
 func Run() error {
 	configDir := ".ollama-chat-tui"
 	chatsDir := "chats"
@@ -21,11 +40,12 @@ func Run() error {
 		return err
 	}
 
-	currentModel := "deepseek-r1"
 	availableModels, err := service.FindOllamaLocalModels()
 	if err != nil {
 		return err
 	}
+
+	currentModel := setDefaultModel(availableModels)
 
 	chatList := ui.NewChatList(chatManager)
 	chatView := ui.NewChatView()
@@ -181,15 +201,4 @@ func Run() error {
 	})
 
 	return app.SetRoot(pages, true).EnableMouse(true).Run()
-}
-
-func openSettings(
-	app *tview.Application,
-	pages *tview.Pages,
-	currentModel string,
-	availableModels *service.FindModelsResponse,
-	onSave func(newModel string),
-) {
-	settingsPage := ui.NewSettingsPage(currentModel, availableModels, onSave)
-	pages.AddAndSwitchToPage("settings", settingsPage.GetPrimitive(), true)
 }
