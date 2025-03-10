@@ -34,7 +34,7 @@ func (cv *ChatView) Update(chat *storage.ChatSession) {
 			speaker = "You"
 			color = "[green]"
 		} else {
-			speaker = chat.Model
+			speaker = fmt.Sprintf("Assistant (%s)", chat.Model)
 			color = "[blue]"
 		}
 
