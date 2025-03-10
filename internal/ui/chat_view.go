@@ -34,7 +34,7 @@ func (cv *ChatView) Update(chat *storage.ChatSession) {
 			speaker = "You"
 			color = "[green]"
 		} else {
-			speaker = "Assistant"
+			speaker = chat.Model
 			color = "[blue]"
 		}
 

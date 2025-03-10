@@ -63,7 +63,7 @@ func Run() error {
 
 			if currentChat == nil {
 				title := fmt.Sprintf("Chat %d", len(chatManager.GetAllChats())+1)
-				currentChat = chatManager.AddChat(title)
+				currentChat = chatManager.AddChat(title, currentModel)
 
 				chatList.Refresh()
 			}

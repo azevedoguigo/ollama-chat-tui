@@ -29,7 +29,7 @@ func NewChatManager(configDir, chatsDir string) (*ChatManager, error) {
 	}, nil
 }
 
-func (cm *ChatManager) AddChat(title string) *storage.ChatSession {
+func (cm *ChatManager) AddChat(title, model string) *storage.ChatSession {
 	cm.mutex.Lock()
 	defer cm.mutex.Unlock()
 
@@ -37,6 +37,7 @@ func (cm *ChatManager) AddChat(title string) *storage.ChatSession {
 		ID:        uuid.New(),
 		Title:     title,
 		Messages:  []storage.Message{},
+		Model:     model,
 		CreatedAt: time.Now(),
 	}
 	cm.chats[chat.ID.String()] = chat
@@ -44,6 +45,7 @@ func (cm *ChatManager) AddChat(title string) *storage.ChatSession {
 	if err := storage.SaveChat(cm.configDir, cm.chatsDir, chat); err != nil {
 		fmt.Printf("Error when saving new chat: %v\n", err)
 	}
+
 	return chat
 }
 
