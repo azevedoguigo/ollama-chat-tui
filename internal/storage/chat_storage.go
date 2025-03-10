@@ -19,6 +19,7 @@ type ChatSession struct {
 	ID        uuid.UUID `json:"id"`
 	Title     string    `json:"title"`
 	Messages  []Message `json:"messages"`
+	Model     string    `json:"model"`
 	FilePath  string    `json:"-"`
 	CreatedAt time.Time `json:"created_at"`
 }
