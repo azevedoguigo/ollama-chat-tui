@@ -185,6 +185,16 @@ func Run() error {
 	})
 
 	mainChatLayout.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		if event.Rune() == rune(tcell.KeyTAB) {
+			currentFocus := app.GetFocus()
+
+			if currentFocus == chatList.GetPrimitive() {
+				app.SetFocus(inputField.GetPrimitive())
+			} else {
+				app.SetFocus(chatList.GetPrimitive())
+			}
+		}
+
 		if event.Rune() == rune(tcell.KeyCtrlD) {
 			openSettings(app, pages, currentModel, availableModels, func(newModel string) {
 				currentModel = newModel
