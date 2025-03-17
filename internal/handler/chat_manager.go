@@ -22,6 +22,7 @@ func NewChatManager(configDir, chatsDir string) (*ChatManager, error) {
 	if err != nil {
 		chats = make(map[string]*storage.ChatSession)
 	}
+
 	return &ChatManager{
 		chats:     chats,
 		configDir: configDir,
